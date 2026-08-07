@@ -1,10 +1,9 @@
-name: Build HKL Agent Installer
+name: Build HKL Agent
 
 on:
   push:
     branches:
       - main
-
 
 jobs:
 
@@ -12,13 +11,15 @@ jobs:
 
     runs-on: windows-latest
 
+    defaults:
+      run:
+        working-directory: windows_installer
+
 
     steps:
 
-
-    - name: Pobranie kodu
+    - name: Pobierz kod
       uses: actions/checkout@v4
-
 
 
     - name: Instalacja Go
@@ -27,51 +28,24 @@ jobs:
         go-version: "1.22"
 
 
-
     - name: Sprawdzenie plików
       shell: cmd
       run: |
         dir
-        echo ----------------
+        echo ------
         dir /s
-
 
 
     - name: Budowanie agenta
       shell: cmd
       run: |
-
-        cd ..
-
         set GOOS=windows
         set GOARCH=amd64
-
         go build -ldflags="-H windowsgui" -o HKL-Agent.exe
 
 
-
-    - name: Budowanie instalatora
-      shell: cmd
-      run: |
-
-        cd windows_installer
-
-        set GOOS=windows
-        set GOARCH=amd64
-
-        go build -o HKL-Agent-Setup.exe
-
-
-
-    - name: Zapis plików
+    - name: Zapis EXE
       uses: actions/upload-artifact@v4
-
       with:
-
         name: HKL-Agent-Windows
-
-        path: |
-
-          HKL-Agent.exe
-
-          windows_installer/HKL-Agent-Setup.exe
+        path: windows_installer/HKL-Agent.exe
