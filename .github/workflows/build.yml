@@ -1,0 +1,50 @@
+name: Build HKL Agent
+
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+    - name: Pobierz kod
+      uses: actions/checkout@v4
+
+
+    - name: Instalacja Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "1.22"
+
+
+    - name: Budowanie agenta
+      run:
+
+        GOOS=windows GOARCH=amd64 go build -ldflags="-H=windowsgui" -o HKL-Agent.exe ./agent
+
+
+    - name: Budowanie instalatora
+      run:
+
+        GOOS=windows GOARCH=amd64 go build -o HKL-Agent-Setup.exe ./installer
+
+
+    - name: Paczka
+      uses: actions/upload-artifact@v4
+
+      with:
+
+        name: HKL-Agent-Windows
+
+        path: |
+          HKL-Agent.exe
+          HKL-Agent-Setup.exe
